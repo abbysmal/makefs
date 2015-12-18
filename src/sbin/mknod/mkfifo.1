@@ -1,0 +1,216 @@
+.\"	$OpenBSD: mkfifo.1,v 1.6 2003/06/02 20:06:15 millert Exp $
+.\"	$NetBSD: mkfifo.1,v 1.4 1994/12/23 07:16:54 jtc Exp $
+.\"
+.\" Copyright (c) 1990, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" This code is derived from software contributed to Berkeley by
+.\" the Institute of Electrical and Electronics Engineers, Inc.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)mkfifo.1	8.2 (Berkeley) 1/5/94
+.\"
+.\"-
+.\" Copyright (c) 2008, 2009
+.\"	Thorsten “mirabilos” Glaser <tg@mirbsd.org>
+.\"-
+.\" Try to make GNU groff and AT&T nroff more compatible
+.\" * ` generates ‘ in gnroff, so use \`
+.\" * ' generates ’ in gnroff, \' generates ´, so use \*(aq
+.\" * - generates ‐ in gnroff, \- generates −, so .tr it to -
+.\"   thus use - for hyphens and \- for minus signs and option dashes
+.\" * ~ is size-reduced and placed atop in groff, so use \*(TI
+.\" * ^ is size-reduced and placed atop in groff, so use \*(ha
+.\" * \(en does not work in nroff, so use \*(en
+.\" The section after the "doc" macropackage has been loaded contains
+.\" additional code to convene between the UCB mdoc macropackage (and
+.\" its variant as BSD mdoc in groff) and the GNU mdoc macropackage.
+.\"
+.ie \n(.g \{\
+.	if \*[.T]ascii .tr \-\N'45'
+.	if \*[.T]latin1 .tr \-\N'45'
+.	if \*[.T]utf8 .tr \-\N'45'
+.	ds <= \[<=]
+.	ds >= \[>=]
+.	ds Rq \[rq]
+.	ds Lq \[lq]
+.	ds sL \(aq
+.	ds sR \(aq
+.	if \*[.T]utf8 .ds sL `
+.	if \*[.T]ps .ds sL `
+.	if \*[.T]utf8 .ds sR '
+.	if \*[.T]ps .ds sR '
+.	ds aq \(aq
+.	ds TI \(ti
+.	ds ha \(ha
+.	ds en \(en
+.\}
+.el \{\
+.	ds aq '
+.	ds TI ~
+.	ds ha ^
+.	ds en \(em
+.\}
+.\"
+.\" Implement .Dd with the Mdocdate RCS keyword
+.\"
+.rn Dd xD
+.de Dd
+.ie \\$1$Mdocdate: \{\
+.	xD \\$2 \\$3, \\$4
+.\}
+.el .xD \\$1 \\$2 \\$3 \\$4 \\$5 \\$6 \\$7 \\$8
+..
+.\"
+.\" .Dd must come before definition of .Mx, because when called
+.\" with -mandoc, it might implement .Mx itself, but we want to
+.\" use our own definition. And .Dd must come *first*, always.
+.\"
+.Dd $Mdocdate: November 22 2009 $
+.\"
+.\" Check which macro package we use
+.\"
+.ie \n(.g \{\
+.	ie d volume-ds-1 .ds tT gnu
+.	el .ds tT bsd
+.\}
+.el .ds tT ucb
+.\"
+.\" Implement .Mx (MirBSD)
+.\"
+.ie "\*(tT"gnu" \{\
+.	eo
+.	de Mx
+.	nr curr-font \n[.f]
+.	nr curr-size \n[.ps]
+.	ds str-Mx \f[\n[curr-font]]\s[\n[curr-size]u]
+.	ds str-Mx1 \*[Tn-font-size]\%MirOS\*[str-Mx]
+.	if !\n[arg-limit] \
+.	if \n[.$] \{\
+.	ds macro-name Mx
+.	parse-args \$@
+.	\}
+.	if (\n[arg-limit] > \n[arg-ptr]) \{\
+.	nr arg-ptr +1
+.	ie (\n[type\n[arg-ptr]] == 2) \
+.	as str-Mx1 \~\*[arg\n[arg-ptr]]
+.	el \
+.	nr arg-ptr -1
+.	\}
+.	ds arg\n[arg-ptr] "\*[str-Mx1]
+.	nr type\n[arg-ptr] 2
+.	ds space\n[arg-ptr] "\*[space]
+.	nr num-args (\n[arg-limit] - \n[arg-ptr])
+.	nr arg-limit \n[arg-ptr]
+.	if \n[num-args] \
+.	parse-space-vector
+.	print-recursive
+..
+.	ec
+.	ds sP \s0
+.	ds tN \*[Tn-font-size]
+.\}
+.el \{\
+.	de Mx
+.	nr cF \\n(.f
+.	nr cZ \\n(.s
+.	ds aa \&\f\\n(cF\s\\n(cZ
+.	if \\n(aC==0 \{\
+.		ie \\n(.$==0 \&MirOS\\*(aa
+.		el .aV \\$1 \\$2 \\$3 \\$4 \\$5 \\$6 \\$7 \\$8 \\$9
+.	\}
+.	if \\n(aC>\\n(aP \{\
+.		nr aP \\n(aP+1
+.		ie \\n(C\\n(aP==2 \{\
+.			as b1 \&MirOS\ #\&\\*(A\\n(aP\\*(aa
+.			ie \\n(aC>\\n(aP \{\
+.				nr aP \\n(aP+1
+.				nR
+.			\}
+.			el .aZ
+.		\}
+.		el \{\
+.			as b1 \&MirOS\\*(aa
+.			nR
+.		\}
+.	\}
+..
+.\}
+.\"-
+.Dt MKFIFO 1
+.Os
+.Sh NAME
+.Nm mkfifo
+.Nd make FIFOs
+.Sh SYNOPSIS
+.Nm mkfifo
+.Op Fl m Ar mode
+.Ar fifo_name ...
+.Sh DESCRIPTION
+.Nm mkfifo
+creates the FIFOs requested, in the order specified,
+using mode
+.Li \&0666
+modified by the current
+.Xr umask 2 .
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl m Ar mode
+Set the file permission bits of newly created directories to
+.Ar mode .
+The mode is specified as in
+.Xr chmod 1 .
+In symbolic mode strings, the
+.Dq +
+and
+.Dq \-
+operators are interpreted relative to an assumed initial mode of
+.Dq a=rw .
+.El
+.Pp
+.Nm mkfifo
+requires write permission in the parent directory.
+.Pp
+The
+.Nm mkfifo
+utility exits 0 on success or \*(Gt0 if an error occurred.
+.Sh SEE ALSO
+.Xr mkdir 1 ,
+.Xr rm 1 ,
+.Xr mkfifo 2 ,
+.Xr mknod 8
+.Sh STANDARDS
+The
+.Nm mkfifo
+utility is expected to be
+.St -p1003.2-92
+compliant.
+.Sh HISTORY
+The
+.Nm
+command appeared in
+.Bx 4.4 .

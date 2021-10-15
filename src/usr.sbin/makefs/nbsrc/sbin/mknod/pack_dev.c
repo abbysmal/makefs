@@ -40,6 +40,7 @@ __RCSID("$NetBSD: pack_dev.c,v 1.10 2009/02/13 01:37:23 lukem Exp $");
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/sysmacros.h>
 
 #include <limits.h>
 #include <stdio.h>
